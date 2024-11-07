@@ -164,6 +164,6 @@ function setalert(message) {
   }, 5001);
 }
 
-setInterval(() => {
-  loadDrivers();
-}, 1000);
+// setInterval(() => {
+//   loadDrivers();
+// }, 1000);
