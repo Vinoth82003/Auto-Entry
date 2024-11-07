@@ -18,7 +18,7 @@ document
       document.getElementById("driver-form").reset();
       loadDrivers();
     } catch (error) {
-      console.error("Error adding driver:", error);
+      console.log("Error adding driver:", error);
     }
   });
 
@@ -49,7 +49,7 @@ async function loadDrivers() {
       )
       .join("");
   } catch (error) {
-    console.error("Error loading drivers list:", error);
+    console.log("Error loading drivers list:", error);
     document.getElementById(
       "drivers-table"
     ).innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error loading drivers list</td></tr>`;
@@ -62,7 +62,7 @@ async function deleteDriver(id) {
     setalert("User Deleted....!");
     loadDrivers();
   } catch (error) {
-    console.error("Error deleting driver:", error);
+    console.log("Error deleting driver:", error);
   }
 }
 
@@ -142,7 +142,7 @@ document
       document.getElementById("update-form").reset();
       loadDrivers();
     } catch (error) {
-      console.error("Error adding driver:", error);
+      console.log("Error adding driver:", error);
     }
   });
 
