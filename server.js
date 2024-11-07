@@ -10,10 +10,13 @@ const loadRoutes = require("./routes/load");
 const app = express();
 const server = http.createServer(app);
 
-mongoose.connect("mongodb+srv://vinothg0618:vinoth112003@cluster0.fiy26nf.mongodb.net/VehicleLoadDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  "mongodb+srv://vinothg0618:vinoth112003@cluster0.fiy26nf.mongodb.net/VehicleLoadDB",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
