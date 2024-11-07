@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Driver Management</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="alert-box"></div>
+      <!-- <div class="alert-msg">
+        <div class="header">
+          <h6>Message</h6>
+          <p class="text">Updated successfully...!</p>
+        </div>
+      </div> -->
+      <h2 class="text-center mb-4">Driver Management</h2>
+      <div class="button-container">
+        <button type="button" class="ct-btn add">+ Add</button>
+        <button type="button" class="ct-btn refresh">Refresh</button>
+        <a href="/in-scanner.html" class="btn btn-warning">In Scanner</a>
+        <a href="/out-scanner.html" class="btn btn-warning">Out Scanner</a>
+      </div>
+      <div class="card shadow p-4 mb-4 add-card">
+        <div class="card-body">
+          <h5 class="card-title">Add New Driver</h5>
+          <form id="driver-form">
+            <div class="row">
+              <div class="mb-3">
+                <label for="name" class="form-label">Driver Name</label>
+                <input type="text" class="form-control" id="name" required />
+              </div>
+              <div class="mb-3">
+                <label for="name" class="form-label">Phone Number</label>
+                <input type="number" class="form-control" id="phone" required />
+              </div>
+            </div>
+            <div class="row">
+              <div class="mb-3">
+                <label for="vehicle" class="form-label">Vehicle</label>
+                <input type="text" class="form-control" id="vehicle" required />
+              </div>
+              <div class="mb-3">
+                <label for="vehicle" class="form-label">Number Plate</label>
+                <input type="text" class="form-control" id="noplate" required />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Driver</button>
+            <button type="button" class="btn btn-danger cancel">Cancel</button>
+          </form>
+        </div>
+      </div>
+      <div class="card shadow p-4 mb-4 update-card">
+        <div class="card-body">
+          <h5 class="card-title">Update Driver</h5>
+          <form id="update-form">
+            <input type="hidden" name="id" id="id" value="" />
+            <div class="row">
+              <div class="mb-3">
+                <label for="name" class="form-label">Driver Name</label>
+                <input type="text" class="form-control" id="uname" required />
+              </div>
+              <div class="mb-3">
+                <label for="name" class="form-label">Phone Number</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="uphone"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="vehicle" class="form-label">Vehicle</label>
+              <input type="text" class="form-control" id="uvehicle" required />
+            </div>
+            <div class="mb-3">
+              <label for="vehicle" class="form-label">Number Plate</label>
+              <input type="text" class="form-control" id="unoplate" required />
+            </div>
+            <div class="mb-3">
+              <label for="vehicle" class="form-label">Total Loads</label>
+              <input type="text" class="form-control" id="uload" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Update Driver</button>
+            <button type="button" class="btn btn-danger ucancel">Cancel</button>
+          </form>
+        </div>
+      </div>
+      <div class="card shadow">
+        <div class="card-body">
+          <h5 class="card-title">Drivers List</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Vehicle</th>
+                <th>Number Plate</th>
+                <th>Total Loads</th>
+                <th>QR Code</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="drivers-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/index.js"></script>
+  </body>
+</html>

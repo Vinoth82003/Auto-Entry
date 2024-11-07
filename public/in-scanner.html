@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Scanner - In</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">
+        Vehicle QR Code Scanning System - In-Scanner
+      </h2>
+      <a href="../" class="btn btn-primary">Home</a>
+      <div class="row mt-2">
+        <div class="col-md-6">
+          <div class="card shadow p-3">
+            <h5 class="card-title text-center">In-Scanner</h5>
+            <div class="row">
+              <video
+                id="in-scanner-video"
+                width="100%"
+                height="200"
+                autoplay
+                muted
+                playsinline
+                class="border"
+              ></video>
+            </div>
+            <button class="btn btn-success mt-3" onclick="startScan()">
+              Start In-Scanner
+            </button>
+            <button class="btn btn-danger mt-3" onclick="stopScan()">
+              Stop In-Scanner
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow p-3">
+            <h5 class="card-title text-center">Scanned details</h5>
+            <ul class="list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let video = document.getElementById("in-scanner-video");
+      let scanning = false;
+      let stream = null;
+
+      async function startScan() {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+          });
+          video.srcObject = stream;
+
+          video.addEventListener("loadedmetadata", () => {
+            scanning = true;
+            scanQRCode();
+          });
+        } catch (error) {
+          console.error("Error accessing camera:", error);
+        }
+      }
+
+      function stopScan() {
+        if (stream) {
+          let tracks = stream.getTracks();
+          tracks.forEach((track) => track.stop());
+        }
+        scanning = false;
+      }
+
+      let lastScannedCodeIn = null;
+      let scanCooldownIn = 1000; // 1 second interval
+      let lastScanTimeIn = 0;
+
+      function scanQRCode() {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        function scanFrame() {
+          if (!scanning) return;
+
+          const currentTime = Date.now();
+          if (currentTime - lastScanTimeIn < scanCooldownIn) {
+            requestAnimationFrame(scanFrame);
+            return;
+          }
+
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          const imageData = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+          if (code && code.data.length > 0) {
+            const audio = new Audio("./audio/audio.mp3");
+            audio.play();
+            console.log(`Scanned data: ${code.data}`);
+            lastScannedCodeIn = code.data;
+            lastScanTimeIn = currentTime;
+            sendDataToServer(code.data);
+          }
+
+          requestAnimationFrame(scanFrame);
+        }
+        scanFrame();
+      }
+
+      async function sendDataToServer(driverId) {
+        try {
+          const response = await fetch("/api/load/in-scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ driverId }),
+          });
+          const result = await response.json();
+          if (result.success) {
+            createList(result.message);
+            console.log("Data successfully scanned and sent to server!");
+          } else {
+            console.log("Unknown error");
+            console.log(result.message);
+            createList(result.message);
+          }
+        } catch (error) {
+          alert("Wrong QR!!\nScan Again");
+          console.error("Error sending scan data:", error);
+        }
+      }
+
+      function createList(data) {
+        console.log(data);
+
+        let li = document.createElement("li");
+        li.innerHTML = `
+          <div class="image-box">
+            <img src="${data.qrLink}" alt="" />
+          </div>
+          <div class="details">
+            <div class="split">
+              <div class="det-list">
+                <strong>Name :</strong>  ${data.name} 
+              </div>
+              <div class="det-list">
+                <strong>Vehicle : </strong> ${data.vehicle} 
+              </div>
+            </div>
+            <div class="split">
+              <div class="det-list">
+                <strong> Total Load : </strong> ${data.totalLoad} 
+              </div>
+              <div class="det-list">
+                <strong>Last Load :</strong>
+              </div>
+            </div>
+            <div class="split">
+              <div class="det-list">
+                <span class="info ${
+                  data.loads[data.loads.length - 1].out == true ? "out" : "in"
+                }">${
+          data.loads[data.loads.length - 1].out == true ? "OUT" : "IN"
+        }</span>
+              </div>
+              <ul class="list-ul">
+                <li>
+                  <strong>IN : ${data.loads[data.loads.length - 1].in}</strong>
+                </li>
+                <li>
+                  <strong>OUT : ${
+                    data.loads[data.loads.length - 1].out
+                  }</strong>
+                </li>
+                <li>
+                  <strong>DATE : ${
+                    data.loads[data.loads.length - 1].date
+                  }</strong>
+                </li>
+              </ul>
+            </div>
+          </div>
+        `;
+        document.querySelector(".list").innerHTML = li.innerHTML;
+      }
+    </script>
+  </body>
+</html>
